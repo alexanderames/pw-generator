@@ -1,18 +1,55 @@
 import React, { Component } from 'react';
-import logo from './logo.svg';
 import './App.css';
 
 class App extends Component {
+  // Initialize state
+  state = { passwords: [] }
+
+  // Fetch passwords after first mount
+  componentDidMount() {
+    this.getPasswords();
+  }
+
+  getPasswords = () => {
+    // Get the passwords and store them in state
+    fetch('/api/passwords')
+      .then(res => res.json())
+      .then(passwords => this.setState({ passwords }));
+  }
+
   render() {
+    const { passwords } = this.state;
+
     return (
       <div className="App">
-        <div className="App-header">
-          <img src={logo} className="App-logo" alt="logo" />
-          <h2>Welcome to React</h2>
-        </div>
-        <p className="App-intro">
-          To get started, edit <code>src/App.js</code> and save to reload.
-        </p>
+        {/* Render the passwords if we have them */}
+        {passwords.length ? (
+          <div>
+            <h1>5 Passwords.</h1>
+            <ul className="passwords">
+              {passwords.map((password, index) =>
+                <li key={index}>
+                  {password}
+                </li>
+              )}
+            </ul>
+            <button
+              className="more"
+              onClick={this.getPasswords}>
+              Get More
+            </button>
+          </div>
+        ) : (
+          // Render a helpful message otherwise
+          <div>
+            <h1>No passwords :(</h1>
+            <button
+              className="more"
+              onClick={this.getPasswords}>
+              Try Again?
+            </button>
+          </div>
+        )}
       </div>
     );
   }
